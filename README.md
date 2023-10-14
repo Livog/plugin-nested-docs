@@ -111,7 +111,7 @@ plugins: [
   ...
   nestedDocs({
     ...
-    generateURL: (docs) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''), // NOTE: 'slug' is a hypothetical field
+    generateURL: (docs, currentDoc, collection) => docs.reduce((url, doc) => `${url}/${doc.slug}`, ''), // NOTE: 'slug' is a hypothetical field
   })
 ]
 ```
@@ -120,6 +120,26 @@ This function takes two arguments and returns a string:
 
 1. `breadcrumbs` - an array of the breadcrumbs up to that point
 1. `currentDoc` - the current document being edited
+1. `collection` - the collection config for current doc, this is useful if you would like to prefix the url with the collection slug.
+
+Example of prefixing
+
+```js
+plugins: [
+  ...
+  nestedDocs({
+    ...
+    generateURL: (docs, lastDoc, collection) => {
+      let prefix = "";
+      switch (collection.slug) {
+        case 'recipes': // or Collection.slug to use "constant" instead.
+          prefix = `/recipes`;
+      }
+      return docs.reduce((url, doc) => `${url}/${doc.slug}`, prefix);
+    },
+  })
+]
+```
 
 #### `parentFieldSlug`
 
@@ -172,6 +192,49 @@ const examplePageConfig: CollectionConfig = {
     ),
   ],
 };
+```
+
+### Overide via Plugin Config
+
+```typescript
+plugins: [
+  ...
+  nestedDocs({
+    ...
+    overrides?: {
+      pathField?: Partial<Field> // Your normal Payload field object
+      breadcrumbsField?: Partial<ArrayField>
+      parentField?: Partial<RelationshipField>
+    }
+  })
+]
+```
+
+## Path Field
+
+If documents are structured in a simular way and all of them have "blocks" that you are looping out on each page and they should not differ, then you could use a [...page].tsx syntax in your frontend application and always just loop out the blocks without needing to have multiple files. This also makes it so Payload is responsible for what is shown on each path. This makes it alot easier to query documents on path without needing to know anything else like parent, breadcrumbs, etc.
+
+### How to validate path field
+
+Since we are running set breadcrumbs on beforeValidate, we can ensure that breadcrumbs is set before validating the path field. This allows us to validate the path field based on the breadcrumbs field and block the save if the path field will conflict with an existing path.
+
+For an example you can add this to you slug field.
+
+```typescript
+  ...fieldConfig,
+  validate: async (val, args) => {
+    const { payload, data } = args;
+    const newPath = data.breadcrumbs?.at(-1)?.url;
+    const willConflict = await willPathConflict({
+      payload,
+      newPath,
+      currentDocId: data.id,
+      collectionsToCheck: ["pages", "recipes"],
+    });
+    return !willConflict
+      ? true
+      : "This will create a conflict with an existing path.";
+  },
 ```
 
 ## Localization

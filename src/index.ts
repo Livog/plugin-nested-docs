@@ -2,10 +2,12 @@ import type { Config } from 'payload/config'
 
 import createBreadcrumbsField from './fields/breadcrumbs'
 import createParentField from './fields/parent'
+import createPathField from './fields/path'
 import resaveChildren from './hooks/resaveChildren'
 import resaveSelfAfterCreate from './hooks/resaveSelfAfterCreate'
 import type { PluginConfig } from './types'
-import populateBreadcrumbs from './utilities/populateBreadcrumbs'
+import setBreadcrumbs from './utilities/setBreadcrumbs'
+import setPathFromBreadcrumbs from './utilities/setPathFromBreadcrumbs'
 
 const nestedDocs =
   (pluginConfig: PluginConfig) =>
@@ -16,21 +18,34 @@ const nestedDocs =
         const fields = [...(collection?.fields || [])]
 
         if (!pluginConfig.parentFieldSlug) {
-          fields.push(createParentField(collection.slug))
+          fields.push(createParentField(collection.slug, pluginConfig.overrides?.parentField))
         }
 
         if (!pluginConfig.breadcrumbsFieldSlug) {
-          fields.push(createBreadcrumbsField(collection.slug))
+          fields.push(
+            createBreadcrumbsField(collection.slug, pluginConfig.overrides?.breadcrumbsField || {}),
+          )
+        }
+
+        if (!pluginConfig.pathFieldSlug) {
+          fields.push(createPathField(pluginConfig.overrides?.pathField || {}))
         }
 
         return {
           ...collection,
           hooks: {
             ...(collection.hooks || {}),
-            beforeChange: [
+            beforeValidate: [
               async ({ req, data, originalDoc }) =>
-                populateBreadcrumbs(req, pluginConfig, collection, data, originalDoc),
-              ...(collection?.hooks?.beforeChange || []),
+                setBreadcrumbs({
+                  req,
+                  pluginConfig,
+                  collection,
+                  data,
+                  originalDoc,
+                }),
+              setPathFromBreadcrumbs,
+              ...(collection?.hooks?.beforeValidate || []),
             ],
             afterChange: [
               resaveChildren(pluginConfig, collection),

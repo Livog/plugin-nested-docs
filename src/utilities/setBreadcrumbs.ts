@@ -1,16 +1,25 @@
-import type { CollectionConfig } from 'payload/types'
+import type { CollectionConfig, PayloadRequest } from 'payload/types'
 
 import type { PluginConfig } from '../types'
 import formatBreadcrumb from './formatBreadcrumb'
 import getParents from './getParents'
 
-const populateBreadcrumbs = async (
-  req: any,
-  pluginConfig: PluginConfig,
-  collection: CollectionConfig,
-  data: any,
-  originalDoc?: any,
-): Promise<any> => {
+interface SetBreadcrumbsParams {
+  req?: PayloadRequest
+  pluginConfig: PluginConfig
+  collection: CollectionConfig
+  data: any
+  originalDoc?: any
+}
+
+const setBreadcrumbs = async ({
+  req,
+  pluginConfig,
+  collection,
+  data,
+  originalDoc,
+}: SetBreadcrumbsParams): Promise<any> => {
+  if (!req) return data
   const newData = data
   const breadcrumbDocs = [
     ...(await getParents(req, pluginConfig, collection, {
@@ -34,4 +43,4 @@ const populateBreadcrumbs = async (
   }
 }
 
-export default populateBreadcrumbs
+export default setBreadcrumbs

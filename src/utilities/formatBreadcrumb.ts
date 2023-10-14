@@ -13,7 +13,7 @@ const formatBreadcrumb = (
   const lastDoc = docs[docs.length - 1]
 
   if (typeof pluginConfig?.generateURL === 'function') {
-    url = pluginConfig.generateURL(docs, lastDoc)
+    url = pluginConfig.generateURL(docs, lastDoc, collection)
   }
 
   if (typeof pluginConfig?.generateLabel === 'function') {

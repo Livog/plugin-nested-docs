@@ -1,7 +1,7 @@
 import type { CollectionAfterChangeHook, CollectionConfig } from 'payload/types'
 
 import type { PluginConfig } from '../types'
-import populateBreadcrumbs from '../utilities/populateBreadcrumbs'
+import getBreadcrumbs from '../utilities/getBreadcrumbs'
 
 const resaveChildren =
   (pluginConfig: PluginConfig, collection: CollectionConfig): CollectionAfterChangeHook =>
@@ -19,11 +19,19 @@ const resaveChildren =
       })
 
       try {
-        children.docs.forEach((child: any) => {
+        children.docs.forEach(async (child: any) => {
           const updateAsDraft =
             typeof collection.versions === 'object' &&
             collection.versions.drafts &&
             child._status !== 'published'
+
+          const breadcrumbs = await getBreadcrumbs({
+            req,
+            pluginConfig,
+            collection,
+            data: child,
+            originalDoc: child,
+          })
 
           payload.update({
             id: child.id,
@@ -31,7 +39,8 @@ const resaveChildren =
             draft: updateAsDraft,
             data: {
               ...child,
-              breadcrumbs: populateBreadcrumbs(req, pluginConfig, collection, child),
+              path: breadcrumbs.at(-1),
+              breadcrumbs,
             },
             depth: 0,
             locale,
