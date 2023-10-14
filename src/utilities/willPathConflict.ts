@@ -6,13 +6,14 @@ const willPathConflict = async ({
   currentDocId,
   collectionsToCheck = [],
 }: {
-  req: PayloadRequest
+  req?: PayloadRequest
   path: string
   currentDocId: string
   collectionsToCheck: string[]
 }): Promise<Boolean> => {
+  if (!req) return false
   const { payload, locale } = req
-  if (!req || !payload || collectionsToCheck.length === 0) return false // Just make it pass the check.
+  if (!payload || collectionsToCheck.length === 0) return false // Just make it pass the check.
 
   const foundDocs = await Promise.all(
     // This is for Mongo DB support. This takes ~140ms where union & selct drizzle query takes ~40ms, but it's not a big deal.
