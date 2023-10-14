@@ -1,11 +1,11 @@
-import type { CollectionConfig, PayloadRequest } from 'payload/types'
+import type { CollectionConfig } from 'payload/types'
 
 import type { PluginConfig } from '../types'
 import formatBreadcrumb from './formatBreadcrumb'
 import getParents from './getParents'
 
 interface SetBreadcrumbsParams {
-  req?: PayloadRequest
+  req?: any
   pluginConfig: PluginConfig
   collection: CollectionConfig
   data: any

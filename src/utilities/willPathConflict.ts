@@ -1,12 +1,10 @@
-import type { PayloadRequest } from 'payload/types'
-
 const willPathConflict = async ({
   req,
   path,
   currentDocId,
   collectionsToCheck = [],
 }: {
-  req?: PayloadRequest
+  req?: any
   path: string
   currentDocId: string
   collectionsToCheck: string[]

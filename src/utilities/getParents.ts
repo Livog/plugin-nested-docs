@@ -1,9 +1,9 @@
-import type { CollectionConfig, PayloadRequest } from 'payload/types'
+import type { CollectionConfig } from 'payload/types'
 
 import type { PluginConfig } from '../types'
 
 const getParents = async (
-  req: PayloadRequest,
+  req: any,
   pluginConfig: PluginConfig,
   collection: CollectionConfig,
   doc: Record<string, unknown>,

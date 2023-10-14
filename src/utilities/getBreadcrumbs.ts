@@ -1,4 +1,4 @@
-import type { CollectionConfig, PayloadRequest } from 'payload/types'
+import type { CollectionConfig } from 'payload/types'
 
 import type { Breadcrumb, PluginConfig } from '../types'
 import formatBreadcrumb from './formatBreadcrumb'
@@ -10,7 +10,7 @@ const ensureDocId = (breadcrumb: Breadcrumb): Breadcrumb => ({
 })
 
 interface GetBreadcrumbsParams {
-  req: PayloadRequest
+  req: any
   pluginConfig: PluginConfig
   collection: CollectionConfig
   data: any
