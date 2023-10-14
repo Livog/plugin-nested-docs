@@ -1,8 +1,7 @@
 import type { CollectionConfig } from 'payload/types'
 
 import type { PluginConfig } from '../types'
-import formatBreadcrumb from './formatBreadcrumb'
-import getParents from './getParents'
+import getBreadcrumbs from './getBreadcrumbs'
 
 interface SetBreadcrumbsParams {
   req?: any
@@ -21,21 +20,13 @@ const setBreadcrumbs = async ({
 }: SetBreadcrumbsParams): Promise<any> => {
   if (!req) return data
   const newData = data
-  const breadcrumbDocs = [
-    ...(await getParents(req, pluginConfig, collection, {
-      ...originalDoc,
-      ...data,
-    })),
-    {
-      ...originalDoc,
-      ...data,
-      id: originalDoc?.id,
-    },
-  ]
-
-  const breadcrumbs = breadcrumbDocs.map((_, i) =>
-    formatBreadcrumb(pluginConfig, collection, breadcrumbDocs.slice(0, i + 1)),
-  ) // eslint-disable-line function-paren-newline
+  const breadcrumbs = await getBreadcrumbs({
+    req,
+    pluginConfig,
+    collection,
+    data,
+    originalDoc,
+  })
 
   return {
     ...newData,
