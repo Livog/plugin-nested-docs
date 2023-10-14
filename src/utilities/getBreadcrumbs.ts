@@ -38,7 +38,7 @@ const getBreadcrumbs = async ({
 
   const breadcrumbs = breadcrumbDocs
     .map((_, i) => formatBreadcrumb(pluginConfig, collection, breadcrumbDocs.slice(0, i + 1)))
-    .map(ensureDocId) // eslint-disable-line function-paren-newline
+    .map(ensureDocId)
 
   return breadcrumbs
 }

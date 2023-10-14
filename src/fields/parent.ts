@@ -12,7 +12,7 @@ const createParentField = (
     maxDepth: 1,
     filterOptions: ({ id }) => ({
       id: { not_equals: id },
-      'breadcrumbs.doc': { not_in: [id] },
+      //'breadcrumbs.doc': { not_in: [id] },
     }),
     admin: {
       position: 'sidebar',
