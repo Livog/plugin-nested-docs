@@ -12,7 +12,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint --fix --ext .ts,.tsx src",
     "clean": "rimraf dist",
-    "prepublishOnly": "yarn clean && yarn build"
+    "prepublishOnly": "pnpm clean && pnpm build"
   },
   "keywords": [
     "payload",
